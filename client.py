@@ -10,13 +10,13 @@ import sys
 # Cliente UDP simple.
 
 # Dirección IP del servidor.
-if len(sys.argv) != 3: 
+if len(sys.argv) != 3:
     sys.exit("Usage: python client.py method receiver@IP:SIPport")
 try:
     METHOD = sys.argv[1]
     line_parameters = sys.argv[2]
     LOGIN = line_parameters.split('@')[0] + '@'
-    linea_2parameters = line_parameters.split('@')[1]
+    line_2parameters = line_parameters.split('@')[1]
     IPSERVER = line_2parameters.split(':')[0]
     PORT = int(line_2parameters.split(':')[1])
 except:
@@ -25,31 +25,29 @@ if PORT < 1024:
     sys.exit("ERROR: PORT IS INCORRECT")
 
 # Contenido que vamos a enviar
-Line_sip = " sip:" + LOGIN + IP + " SIP/2.0\r\n"
+Line_sip = " sip:" + LOGIN + IPSERVER + " SIP/2.0\r\n"
 if METHOD == 'INVITE':
     LINE = "INVITE" + Line_sip
-elif METHOD == "BYE":
+elif METHOD == 'BYE':
     LINE = "BYE" + Line_sip
     
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-my_socket.connect((SERVER, PORT))
+my_socket.connect((IPSERVER, PORT))
 
 print("Enviando: " + LINE)
 my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
 data_decod = data.decode('utf-8')
 
-message_trying = data_decod.split('\r\n\r\n')[0]
-message_ring = data_decod.split('\r\n\r\n')[1]
-message_ok = data_decod.split('\r\n\r\n')[2]
-lista = [message_trying, message_ring, message_ok]
-if (lista = ['SIP/2.0 100 Trying', 'SIP/2.0 180 Ring', 'SIP/2.0 200 OK'])
-    LINE = "ACK" + Line_sip
-    print("Enviando: " + LINE)
-    my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
+lista = data_decod.split('\r\n\r\n')[0:-1]
+if lista == ['SIP/2.0 100 Trying', 'SIP/2.0 180 Ring', 'SIP/2.0 200 OK']:
+    LINEACK = "ACK" + Line_sip
+    print(LINEACK)
+    print("Enviando: " + LINEACK)
+    my_socket.send(bytes(LINEACK, 'utf-8') + b'\r\n')
     data = my_socket.recv(1024)
 
 print('Recibido -- ', data_decod)
