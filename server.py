@@ -6,11 +6,7 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
-
-
-def information (line_decod):
-    sip = line_decod.split()[1]
-    LOGIN = sip.split('sip:')[1]
+import os
 
 
 class EchoHandler(socketserver.DatagramRequestHandler):
@@ -25,7 +21,24 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             line_decod = line.decode('utf-8')
-            print("El cliente nos manda " + line_decod)
+            METHOD = line_decod.split()[0].upper()
+            if len(line_decod) >= 2:
+                if METHOD == 'INVITE':
+                    trying = "SIP/2.0 100 Trying\r\n"
+                    ring = "SIP/2.0 180 Ring\r\n"
+                    ok = "SIP/2.0 200 OK\r\n\r\n"
+                    self.wfile.write(b(trying + ring + ok))
+                elif METHOD == 'ACK':
+                   aEjecutar = './mp32rtp -i 127.0.0.1 -p 23032 <' FICHAUDIO
+                   os.system(aEjecutar)
+                elif METHOD == 'BYE':
+                    self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+                elif (METHOD != 'INVITE' & METHOD != 'BYE' & METHOD != 'ACK'):
+                    self.wfile.write(b"SIP/2.0 405 Method Not Allowed\r\n\r\n")
+                else:
+                    self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
+            else:
+                print("El cliente nos manda " + line_decod)
 
             # Si no hay más líneas salimos del bucle infinito
             if not line:
