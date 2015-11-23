@@ -5,12 +5,19 @@ Programa cliente que abre un socket a un servidor
 """
 
 import socket
+import sys
 
 # Cliente UDP simple.
 
 # Dirección IP del servidor.
-SERVER = 'localhost'
-PORT = 6001
+METHOD = sys.argv[1]
+line_parameters = sys.argv[2]
+LOGIN = line_parameters.split('@')[0] + '@'
+linea_2parameters = line_parameters.split('@')[1]
+IPSERVER = line_2parameters.split(':')[0]
+PORT = int(line_2parameters.split(':')[1])
+if PORT < 1024:
+    sys.exit("ERROR: PORT IS INCORRECT")
 
 # Contenido que vamos a enviar
 LINE = '¡Hola mundo!'
