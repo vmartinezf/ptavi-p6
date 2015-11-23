@@ -16,20 +16,17 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
-        self.wfile.write(b"Hemos recibido tu peticion")
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             line_decod = line.decode('utf-8')
-            METHOD = line_decod.split()[0].upper()
+            METHOD = line_decod.split(' ')[0].upper()
             if len(line_decod) >= 2:
                 if METHOD == 'INVITE':
-                    trying = "SIP/2.0 100 Trying\r\n"
-                    ring = "SIP/2.0 180 Ring\r\n"
-                    ok = "SIP/2.0 200 OK\r\n\r\n"
-                    self.wfile.write(b(trying + ring + ok))
+                    message_send = b"SIP/2.0 100 Trying\r\n\r\nSIP/2.0 180 Ring\r\n\r\nSIP/2.0 200 OK\r\n\r\n"
+                    self.wfile.write(message_send)
                 elif METHOD == 'ACK':
-                   aEjecutar = './mp32rtp -i 127.0.0.1 -p 23032 <' FICHAUDIO
+                   aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICHAUDIO
                    os.system(aEjecutar)
                 elif METHOD == 'BYE':
                     self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
