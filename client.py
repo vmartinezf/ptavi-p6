@@ -41,7 +41,16 @@ print("Enviando: " + LINE)
 my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
 data_decod = data.decode('utf-8')
-# COMPROBAR LINEA"
+
+message_trying = data_decod.split('\r\n\r\n')[0]
+message_ring = data_decod.split('\r\n\r\n')[1]
+message_ok = data_decod.split('\r\n\r\n')[2]
+lista = [message_trying, message_ring, message_ok]
+if (lista = ['SIP/2.0 100 Trying', 'SIP/2.0 180 Ring', 'SIP/2.0 200 OK'])
+    LINE = "ACK" + Line_sip
+    print("Enviando: " + LINE)
+    my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
+    data = my_socket.recv(1024)
 
 print('Recibido -- ', data_decod)
 print("Terminando socket...")
