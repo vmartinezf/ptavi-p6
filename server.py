@@ -7,6 +7,7 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 import socketserver
 import sys
 import os
+import os.path
 
 
 class EchoHandler(socketserver.DatagramRequestHandler):
@@ -26,8 +27,8 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                     message_send = b"SIP/2.0 100 Trying\r\n\r\nSIP/2.0 180 Ring\r\n\r\nSIP/2.0 200 OK\r\n\r\n"
                     self.wfile.write(message_send)
                 elif METHOD == 'ACK':
-                   aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICHAUDIO
-                   os.system(aEjecutar)
+                    aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICHAUDIO
+                    os.system(aEjecutar)
                 elif METHOD == 'BYE':
                     self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
                 elif (METHOD != 'INVITE' & METHOD != 'BYE' & METHOD != 'ACK'):
@@ -49,6 +50,8 @@ if __name__ == "__main__":
         if PORT < 1024:
             sys.exit("Error: port is invalid")
         FICHAUDIO = sys.argv[3]
+        if not os.path.exists(FICHAUDIO):
+            sys.exit("Usage: python server.py IP port audio_file")
     except:
         sys.exit("Usage: python server.py IP port audio_file")
     serv = socketserver.UDPServer(('', PORT), EchoHandler)
