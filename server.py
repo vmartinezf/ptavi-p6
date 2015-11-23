@@ -24,7 +24,9 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             METHOD = line_decod.split(' ')[0].upper()
             if len(line_decod) >= 2:
                 if METHOD == 'INVITE':
-                    message_send = b"SIP/2.0 100 Trying\r\n\r\nSIP/2.0 180 Ring\r\n\r\nSIP/2.0 200 OK\r\n\r\n"
+                    message_send = b'SIP/2.0 100 Trying\r\n\r\n'
+                    message_send += b'SIP/2.0 180 Ring\r\n\r\n'
+                    message_send += b'SIP/2.0 200 OK\r\n\r\n'
                     self.wfile.write(message_send)
                 elif METHOD == 'ACK':
                     aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICHAUDIO
