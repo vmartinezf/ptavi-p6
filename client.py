@@ -40,8 +40,10 @@ my_socket.connect((SERVER, PORT))
 print("Enviando: " + LINE)
 my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
+data_decod = data.decode('utf-8')
+# COMPROBAR LINEA"
 
-print('Recibido -- ', data.decode('utf-8'))
+print('Recibido -- ', data_decod)
 print("Terminando socket...")
 
 # Cerramos todo
