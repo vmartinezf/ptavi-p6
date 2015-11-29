@@ -22,6 +22,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             line = self.rfile.read()
             line_decod = line.decode('utf-8')
             METHOD = line_decod.split(' ')[0].upper()
+            METHODS = ['INVITE', 'BYE', 'ACK']
             if len(line_decod) >= 2:
                 if METHOD == 'INVITE':
                     message_send = b'SIP/2.0 100 Trying\r\n\r\n'
@@ -29,12 +30,13 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                     message_send += b'SIP/2.0 200 OK\r\n\r\n'
                     self.wfile.write(message_send)
                 elif METHOD == 'ACK':
-                    aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICHAUDIO
+                    aEjecutar = './mp32rtp -i ' + IP + ' -p 23032 <' + FICH
                     os.system(aEjecutar)
                 elif METHOD == 'BYE':
                     self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                elif (METHOD != 'INVITE' & METHOD != 'BYE' & METHOD != 'ACK'):
-                    self.wfile.write(b"SIP/2.0 405 Method Not Allowed\r\n\r\n")
+                elif METHOD not in METHODS:
+                    message_send = b'SIP/2.0 405 Method Not Allowed\r\n\r\n'
+                    self.wfile.write(message_send)
                 else:
                     self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
             else:
@@ -51,8 +53,8 @@ if __name__ == "__main__":
         PORT = int(sys.argv[2])
         if PORT < 1024:
             sys.exit("Error: port is invalid")
-        FICHAUDIO = sys.argv[3]
-        if not os.path.exists(FICHAUDIO):
+        FICH = sys.argv[3]
+        if not os.path.exists(FICH):
             sys.exit("Usage: python server.py IP port audio_file")
     except:
         sys.exit("Usage: python server.py IP port audio_file")
