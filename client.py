@@ -13,7 +13,8 @@ import sys
 if len(sys.argv) != 3:
     sys.exit("Usage: python client.py method receiver@IP:SIPport")
 try:
-    METHOD = sys.argv[1]
+    METHOD1 = sys.argv[1]
+    METHOD = METHOD1.upper()
     line_parameters = sys.argv[2]
     LOGIN = line_parameters.split('@')[0] + '@'
     line_2parameters = line_parameters.split('@')[1]
@@ -26,11 +27,7 @@ if PORT < 1024:
 
 # Contenido que vamos a enviar
 Line_sip = " sip:" + LOGIN + IPSERVER + " SIP/2.0\r\n"
-if METHOD == 'INVITE':
-    LINE = "INVITE" + Line_sip
-elif METHOD == 'BYE':
-    LINE = "BYE" + Line_sip
-    
+LINE = METHOD + Line_sip
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -42,16 +39,15 @@ my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
 data = my_socket.recv(1024)
 data_decod = data.decode('utf-8')
 
+print('Recibido -- ', data_decod)
+print("Terminando socket...")
+
 lista = data_decod.split('\r\n\r\n')[0:-1]
 if lista == ['SIP/2.0 100 Trying', 'SIP/2.0 180 Ring', 'SIP/2.0 200 OK']:
     LINEACK = "ACK" + Line_sip
-    print(LINEACK)
     print("Enviando: " + LINEACK)
     my_socket.send(bytes(LINEACK, 'utf-8') + b'\r\n')
     data = my_socket.recv(1024)
-
-print('Recibido -- ', data_decod)
-print("Terminando socket...")
 
 # Cerramos todo
 my_socket.close()
