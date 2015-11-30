@@ -59,5 +59,5 @@ if __name__ == "__main__":
     except:
         sys.exit("Usage: python server.py IP port audio_file")
     serv = socketserver.UDPServer(('', PORT), EchoHandler)
-    print("Lanzando servidor UDP de eco...")
+    print("Listening...")
     serv.serve_forever()
